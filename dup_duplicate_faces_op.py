@@ -1,6 +1,6 @@
 import bpy
 
-import dup_duplicate_utils
+from . import dup_duplicate_utils
 
 
 class DUP_DuplicateToFacesOperator(bpy.types.Operator):

@@ -1,8 +1,3 @@
-import bpy
-
-from . dup_duplicate_op import DUP_DuplicateToFacesOperator
-from . dup_panel import DUP_PT_Panel
-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
@@ -27,9 +22,19 @@ bl_info = {
     "category": "Generic"
 }
 
-classes = (
-    DUP_DuplicateToFacesOperator,
-    DUP_PT_Panel
-)
+if "bpy" in locals():
+    import importlib
+    importlib.reload(Duplicator)
+    print('reloaded Duplicator')
+else:
+    from . import Duplicator
 
-register, unregister = bpy.utils.register_classes_factory(classes)
+import bpy
+
+
+def register():
+    Duplicator.register()
+
+
+def unregister():
+    Duplicator.unregister()

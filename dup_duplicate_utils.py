@@ -62,7 +62,9 @@ def rotate_obj_z(obj, factor=1.0):
     obj.rotation_euler.rotate_axis("Z", angle)
 
 
-def duplicate_obj(name, src_obj, col=bpy.context.collection):
+def duplicate_obj(name, src_obj, col=None):
+    if not col:
+        col = bpy.context.collection
     new_obj = bpy.data.objects.new(name, src_obj.data)
 
     # add to collection
@@ -87,12 +89,6 @@ def duplicate_obj(name, src_obj, col=bpy.context.collection):
     return new_obj
 
 
-def duplicate_selected(col=bpy.context.collection):
-    selected = bpy.context.object
-    if selected:
-        duplicate_obj(selected.name, selected, col)
-
-
 def align_obj_with_normal(obj, normal):
     rot_diff = mathutils.Vector((0, 0, 1)).rotation_difference(normal)
     obj.rotation_mode = 'QUATERNION'
@@ -109,7 +105,7 @@ def move_to_vertex(obj, vertex):
     align_obj_with_normal(obj, vertex.normal)
 
 
-def duplicate_to_faces(src_obj, target, col=bpy.context.collection):
+def duplicate_to_faces(src_obj, target, col=None):
     """Duplicate the selected object to the faces of the active object"""
     for face in target.data.polygons:
         new_obj = duplicate_obj(target.name, src_obj, col)
@@ -118,15 +114,23 @@ def duplicate_to_faces(src_obj, target, col=bpy.context.collection):
         rotate_obj_z(new_obj)
 
 
-def duplicate_selected_to_faces(col=bpy.context.collection):
+def duplicate_selected_to_faces(col=None):
     if len(bpy.context.selected_objects) > 1:
-        source = bpy.context.selected_objects[0]
+        source = bpy.context.selected_objects[1]
         target = bpy.context.object
         if source:
             duplicate_to_faces(source, target, col)
 
 
-def duplicate_to_vertices(src_obj, target, col=bpy.context.collection):
+def duplicate_selected_to_vertices(col=None):
+    if len(bpy.context.selected_objects) > 1:
+        source = bpy.context.selected_objects[1]
+        target = bpy.context.object
+        if source:
+            duplicate_to_vertices(source, target, col)
+
+
+def duplicate_to_vertices(src_obj, target, col=None):
     for vertex in target.data.vertices:
         new_obj = duplicate_obj(target.name, src_obj, col)
         new_obj.parent = target
