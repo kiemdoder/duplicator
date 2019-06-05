@@ -56,10 +56,12 @@ def copy_particle_systems(from_obj, to_obj):
         bpy.context.view_layer.objects.active = active
 
 
-def rotate_obj_z(obj, factor=1.0):
-    angle = random.random() * factor * math.pi - (math.pi / 2)
-    obj.rotation_mode = 'ZXY'
-    obj.rotation_euler.rotate_axis("Z", angle)
+def rotate_obj_z(obj):
+    if bpy.context.scene.dup_randomise_duplicated:
+        factor = bpy.context.scene.dup_random_rotation_factor
+        angle = random.random() * factor * (math.pi - (math.pi / 2))
+        obj.rotation_mode = 'ZXY'
+        obj.rotation_euler.rotate_axis("Z", angle)
 
 
 def duplicate_obj(name, src_obj, col=None, location=(0, 0, 0)):
@@ -67,6 +69,7 @@ def duplicate_obj(name, src_obj, col=None, location=(0, 0, 0)):
         col = bpy.context.collection
 
     new_obj = bpy.data.objects.new(name, src_obj.data)
+    new_obj['duplicated'] = True
     new_obj.location = location
 
     # add to collection
@@ -131,6 +134,14 @@ def duplicate_selected_to_faces(col=None):
             duplicate_to_faces(source, target, col)
 
 
+def duplicate_to_vertices(src_obj, target, col=None):
+    for vertex in target.data.vertices:
+        new_obj = duplicate_obj(target.name, src_obj, col)
+        new_obj.parent = target
+        move_to_vertex(new_obj, vertex)
+        rotate_obj_z(new_obj)
+
+
 def duplicate_selected_to_vertices(col=None):
     if len(bpy.context.selected_objects) > 1:
         source = bpy.context.selected_objects[1]
@@ -139,17 +150,16 @@ def duplicate_selected_to_vertices(col=None):
             duplicate_to_vertices(source, target, col)
 
 
-def duplicate_to_vertices(src_obj, target, col=None):
-    for vertex in target.data.vertices:
-        new_obj = duplicate_obj(target.name, src_obj, col)
-        new_obj.parent = target
-        move_to_vertex(new_obj, vertex)
-
-
-def delete_children(obj):
+def delete_duplicated_children(obj):
     for child in obj.children:
-        delete_children(child)
-        bpy.data.objects.remove(child, do_unlink=True)
+        if 'duplicated' in child:
+            delete_duplicated_children(child)
+            bpy.data.objects.remove(child, do_unlink=True)
+
+
+def delete_duplicated_children_for_selected():
+    for obj in bpy.context.selected_objects:
+        delete_duplicated_children(obj)
 
 # duplicate_obj('takkie2', bpy.data.objects['takkie'])
 # duplicate_selected()
