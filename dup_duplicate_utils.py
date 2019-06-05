@@ -62,10 +62,12 @@ def rotate_obj_z(obj, factor=1.0):
     obj.rotation_euler.rotate_axis("Z", angle)
 
 
-def duplicate_obj(name, src_obj, col=None):
+def duplicate_obj(name, src_obj, col=None, location=(0, 0, 0)):
     if not col:
         col = bpy.context.collection
+
     new_obj = bpy.data.objects.new(name, src_obj.data)
+    new_obj.location = location
 
     # add to collection
     col.objects.link(new_obj)
@@ -87,6 +89,13 @@ def duplicate_obj(name, src_obj, col=None):
         new_child.parent = new_obj
 
     return new_obj
+
+
+def duplicate_selected(col=None):
+    src_obj = bpy.context.object
+    location = bpy.context.scene.cursor.location
+    if src_obj:
+        duplicate_obj(src_obj.name, src_obj, col, location)
 
 
 def align_obj_with_normal(obj, normal):

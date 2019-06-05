@@ -25,7 +25,7 @@ bl_info = {
 if "bpy" in locals():
     import importlib
     importlib.reload(Duplicator)
-    print('reloaded Duplicator')
+    print('Reloaded Duplicator')
 else:
     from . import Duplicator
 
