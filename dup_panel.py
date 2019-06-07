@@ -22,6 +22,8 @@ class DUP_PT_Panel(bpy.types.Panel):
         layout.prop(context.scene, "dup_randomise_duplicated")
         layout.row()
         layout.prop(context.scene, "dup_random_rotation_factor")
+        layout.row()
+        layout.prop(context.scene, "dup_density")
 
         row = layout.row()
         row.operator('object.delete_duplicated_children', text="Remove duplicated children")

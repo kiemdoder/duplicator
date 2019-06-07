@@ -99,21 +99,25 @@ def duplicate_obj(name, src_obj, col=None):
     return new_obj
 
 
-def duplicate_tree(name, src_obj, col=None):
+def duplicate_tree(name, src_obj, col=None, offset=mathutils.Vector((0, 0, 0))):
     new_obj = duplicate_obj(name, src_obj, col)
     for child in src_obj.children:
-        loc_offset = child.location - src_obj.location
-        new_child = duplicate_tree(child.name, child, col)
+        loc_offset = child.location - src_obj.location + offset
+        new_child = duplicate_tree(child.name, child, col, loc_offset)
         new_child.parent = new_obj
-        new_child.location = new_child.location + loc_offset
+        if src_obj.instance_type == 'NONE':
+            new_child.location = new_child.location + loc_offset
 
     return new_obj
 
 
 def duplicate_selected(col=None):
     src_obj = bpy.context.object
+    if bpy.context.scene.dup_duplicate_tree:
+        src_obj = root_parent(src_obj)
+
     if src_obj:
-        new_obj = duplicate_obj(src_obj.name, src_obj, col)
+        new_obj = duplicate_tree(src_obj.name, src_obj, col)
         new_obj.location = bpy.context.scene.cursor.location
 
 
@@ -139,10 +143,11 @@ def duplicate_to_faces(src_obj, target, col=None):
         src_obj = root_parent(src_obj)
 
     for face in target.data.polygons:
-        new_obj = duplicate_tree(target.name, src_obj, col)
-        new_obj.parent = target
-        move_to_face(new_obj, face)
-        rotate_obj_z(new_obj)
+        if random.random() < bpy.context.scene.dup_density:
+            new_obj = duplicate_tree(target.name, src_obj, col)
+            new_obj.parent = target
+            move_to_face(new_obj, face)
+            rotate_obj_z(new_obj)
 
 
 def duplicate_selected_to_faces(col=None):
@@ -154,11 +159,15 @@ def duplicate_selected_to_faces(col=None):
 
 
 def duplicate_to_vertices(src_obj, target, col=None):
+    if bpy.context.scene.dup_duplicate_tree:
+        src_obj = root_parent(src_obj)
+
     for vertex in target.data.vertices:
-        new_obj = duplicate_obj(target.name, src_obj, col)
-        new_obj.parent = target
-        move_to_vertex(new_obj, vertex)
-        rotate_obj_z(new_obj)
+        if random.random() < bpy.context.scene.dup_density:
+            new_obj = duplicate_tree(target.name, src_obj, col)
+            new_obj.parent = target
+            move_to_vertex(new_obj, vertex)
+            rotate_obj_z(new_obj)
 
 
 def duplicate_selected_to_vertices(col=None):

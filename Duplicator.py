@@ -24,6 +24,13 @@ bpy.types.Scene.dup_random_rotation_factor = FloatProperty(
     min=0.0,
     max=1.0)
 
+bpy.types.Scene.dup_density = FloatProperty(
+    name="Density",
+    description="The fraction of the faces/vertices that must be covered",
+    default=1.0,
+    min=0.0,
+    max=1.0)
+
 classes = (
     DUP_DuplicateToCursorOperator,
     DUP_DuplicateToFacesOperator,
