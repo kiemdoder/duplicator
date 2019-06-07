@@ -71,6 +71,14 @@ def rotate_obj_z(obj):
         obj.rotation_euler.rotate_axis("Z", angle)
 
 
+def scale_obj(obj):
+    if bpy.context.scene.dup_randomise_scale:
+        (sx, sy, sz) = obj.scale
+        up_down = 0.5 if random.random() < 0.5 else -0.5
+        scale_delta = 1.0 + (random.random() * bpy.context.scene.dup_random_scale * up_down)
+        obj.scale = (sx * scale_delta, sy * scale_delta, sz * scale_delta)
+
+
 def duplicate_obj(name, src_obj, col=None):
     if not col:
         col = bpy.context.collection
@@ -169,12 +177,14 @@ def duplicate_to_faces(src_obj, target, col=None):
     if bpy.context.scene.dup_duplicate_tree:
         src_obj = root_parent(src_obj)
 
+
     for face in target.data.polygons:
         if random.random() < bpy.context.scene.dup_density:
             new_obj = duplicate_tree(target.name, src_obj, col)
             new_obj.parent = target
             move_to_face(new_obj, face)
             rotate_obj_z(new_obj)
+            scale_obj(new_obj)
 
 
 def duplicate_selected_to_faces(col=None):
@@ -195,6 +205,7 @@ def duplicate_to_vertices(src_obj, target, col=None):
             new_obj.parent = target
             move_to_vertex(new_obj, vertex)
             rotate_obj_z(new_obj)
+            scale_obj(new_obj)
 
 
 def duplicate_selected_to_vertices(col=None):

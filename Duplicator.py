@@ -36,12 +36,24 @@ bpy.types.Scene.dup_random_displacement = FloatProperty(
     min=0.0,
     max=1.0)
 
+bpy.types.Scene.dup_randomise_scale = BoolProperty(
+    name="Randomise scale",
+    description="Randomise the scale of an object when it is duplicated",
+    default=False)
+
+bpy.types.Scene.dup_random_scale = FloatProperty(
+    name="Random scale",
+    description="The amount of random scale to be applied to duplicates",
+    default=0.0,
+    min=0.0,
+    max=1.0)
+
 bpy.types.Scene.dup_density = FloatProperty(
     name="Density",
     description="The fraction of the faces/vertices that must be covered",
     default=1.0,
-    min=0.0,
-    max=1.0)
+    min=-0.5,
+    max=0.5)
 
 classes = (
     DUP_DuplicateToCursorOperator,
