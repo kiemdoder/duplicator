@@ -102,8 +102,10 @@ def duplicate_obj(name, src_obj, col=None):
 def duplicate_tree(name, src_obj, col=None):
     new_obj = duplicate_obj(name, src_obj, col)
     for child in src_obj.children:
+        loc_offset = child.location - src_obj.location
         new_child = duplicate_tree(child.name, child, col)
         new_child.parent = new_obj
+        new_child.location = new_child.location + loc_offset
 
     return new_obj
 
