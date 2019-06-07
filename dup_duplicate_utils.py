@@ -37,6 +37,13 @@ def select_objects(objects):
         obj.select_set(True)
 
 
+def root_parent(obj):
+    if obj.parent:
+        return root_parent(obj.parent)
+    else:
+        return obj
+
+
 def copy_particle_systems(from_obj, to_obj):
     selected = deselect_all()
     active = bpy.context.object
@@ -64,13 +71,12 @@ def rotate_obj_z(obj):
         obj.rotation_euler.rotate_axis("Z", angle)
 
 
-def duplicate_obj(name, src_obj, col=None, location=(0, 0, 0)):
+def duplicate_obj(name, src_obj, col=None):
     if not col:
         col = bpy.context.collection
 
     new_obj = bpy.data.objects.new(name, src_obj.data)
     new_obj['duplicated'] = True
-    new_obj.location = location
 
     # add to collection
     col.objects.link(new_obj)
@@ -87,8 +93,16 @@ def duplicate_obj(name, src_obj, col=None, location=(0, 0, 0)):
     new_obj.show_instancer_for_render = src_obj.show_instancer_for_render
     new_obj.instance_faces_scale = src_obj.instance_faces_scale
 
+    new_obj.display_type = src_obj.display_type
+    new_obj.hide_render = src_obj.hide_render
+
+    return new_obj
+
+
+def duplicate_tree(name, src_obj, col=None):
+    new_obj = duplicate_obj(name, src_obj, col)
     for child in src_obj.children:
-        new_child = duplicate_obj(child.name, child, col)
+        new_child = duplicate_tree(child.name, child, col)
         new_child.parent = new_obj
 
     return new_obj
@@ -96,9 +110,9 @@ def duplicate_obj(name, src_obj, col=None, location=(0, 0, 0)):
 
 def duplicate_selected(col=None):
     src_obj = bpy.context.object
-    location = bpy.context.scene.cursor.location
     if src_obj:
-        duplicate_obj(src_obj.name, src_obj, col, location)
+        new_obj = duplicate_obj(src_obj.name, src_obj, col)
+        new_obj.location = bpy.context.scene.cursor.location
 
 
 def align_obj_with_normal(obj, normal):
@@ -119,8 +133,11 @@ def move_to_vertex(obj, vertex):
 
 def duplicate_to_faces(src_obj, target, col=None):
     """Duplicate the selected object to the faces of the active object"""
+    if bpy.context.scene.dup_duplicate_tree:
+        src_obj = root_parent(src_obj)
+
     for face in target.data.polygons:
-        new_obj = duplicate_obj(target.name, src_obj, col)
+        new_obj = duplicate_tree(target.name, src_obj, col)
         new_obj.parent = target
         move_to_face(new_obj, face)
         rotate_obj_z(new_obj)
@@ -160,10 +177,3 @@ def delete_duplicated_children(obj):
 def delete_duplicated_children_for_selected():
     for obj in bpy.context.selected_objects:
         delete_duplicated_children(obj)
-
-# duplicate_obj('takkie2', bpy.data.objects['takkie'])
-# duplicate_selected()
-# rotate_obj_Z(bpy.data.objects['Cube'])
-# duplicate_to_faces(bpy.data.objects['takkie'], bpy.data.objects['copy-target1'])
-# duplicate_to_vertices(bpy.data.objects['Cube'], bpy.data.objects['copy-target1'])
-# delete_children(bpy.data.objects['copy-target1'])

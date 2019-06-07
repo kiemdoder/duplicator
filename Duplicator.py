@@ -7,6 +7,11 @@ from .dup_duplicate_vertices_op import DUP_DuplicateToVerticesOperator
 from .dup_delete_duplicated_children_op import DUP_DeleteDuplicatedChildrenOperator
 from .dup_panel import DUP_PT_Panel
 
+bpy.types.Scene.dup_duplicate_tree = BoolProperty(
+    name="Duplicate tree",
+    description="Duplicate parent and siblings",
+    default=True)
+
 bpy.types.Scene.dup_randomise_duplicated = BoolProperty(
     name="Randomise rotation",
     description="Randomise the rotation of an object when it is duplicated",
