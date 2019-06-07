@@ -131,10 +131,37 @@ def move_to_face(obj, face):
     obj.location = face.center
     align_obj_with_normal(obj, face.normal)
 
+    if bpy.context.scene.dup_randomise_displacement:
+        local_x_axis = mathutils.Vector((0, 0, 1)).cross(face.normal)
+        if local_x_axis.length == 0:
+            local_x_axis = mathutils.Vector((1, 0, 0))
+        local_y_axis = local_x_axis.cross(face.normal)
+        square_face_width = math.sqrt(face.area)
+        displace_factor = bpy.context.scene.dup_random_displacement
+
+        if random.random() > 0.5:
+            local_x_axis.negate()
+
+        if random.random() > 0.5:
+            local_y_axis.negate()
+
+        local_x_axis.length = random.random() * (square_face_width / 2) * displace_factor
+        local_y_axis.length = random.random() * (square_face_width / 2) * displace_factor
+
+        obj.location = obj.location + local_x_axis + local_y_axis
+
 
 def move_to_vertex(obj, vertex):
     obj.location = vertex.co
     align_obj_with_normal(obj, vertex.normal)
+
+
+def selected_src_obj():
+    for obj in bpy.context.selected_objects:
+        if obj.name != bpy.context.object.name:
+            return obj
+
+    return None
 
 
 def duplicate_to_faces(src_obj, target, col=None):
@@ -152,7 +179,7 @@ def duplicate_to_faces(src_obj, target, col=None):
 
 def duplicate_selected_to_faces(col=None):
     if len(bpy.context.selected_objects) > 1:
-        source = bpy.context.selected_objects[1]
+        source = selected_src_obj()
         target = bpy.context.object
         if source:
             duplicate_to_faces(source, target, col)
@@ -172,7 +199,7 @@ def duplicate_to_vertices(src_obj, target, col=None):
 
 def duplicate_selected_to_vertices(col=None):
     if len(bpy.context.selected_objects) > 1:
-        source = bpy.context.selected_objects[1]
+        source = selected_src_obj()
         target = bpy.context.object
         if source:
             duplicate_to_vertices(source, target, col)

@@ -23,6 +23,10 @@ class DUP_PT_Panel(bpy.types.Panel):
         layout.row()
         layout.prop(context.scene, "dup_random_rotation_factor")
         layout.row()
+        layout.prop(context.scene, "dup_randomise_displacement")
+        layout.row()
+        layout.prop(context.scene, "dup_random_displacement")
+        layout.row()
         layout.prop(context.scene, "dup_density")
 
         row = layout.row()

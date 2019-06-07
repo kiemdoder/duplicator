@@ -24,6 +24,18 @@ bpy.types.Scene.dup_random_rotation_factor = FloatProperty(
     min=0.0,
     max=1.0)
 
+bpy.types.Scene.dup_randomise_displacement = BoolProperty(
+    name="Randomise displacement",
+    description="Randomise the displacement of an object when it is duplicated",
+    default=True)
+
+bpy.types.Scene.dup_random_displacement = FloatProperty(
+    name="Random displacement",
+    description="The amount of random displacement to be applied to duplicates",
+    default=0.5,
+    min=0.0,
+    max=1.0)
+
 bpy.types.Scene.dup_density = FloatProperty(
     name="Density",
     description="The fraction of the faces/vertices that must be covered",
