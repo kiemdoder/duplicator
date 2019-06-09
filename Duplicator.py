@@ -1,6 +1,7 @@
 import bpy
 from bpy.props import BoolProperty, FloatProperty, IntProperty
 
+from .dup_toggle_bounding_box_op import DuplicatorToggleDuplicatedBoundingBoxOperator
 from .dup_duplicate_cursor_op import DUP_DuplicateToCursorOperator
 from .dup_duplicate_faces_op import DUP_DuplicateToFacesOperator
 from .dup_duplicate_vertices_op import DUP_DuplicateToVerticesOperator
@@ -71,6 +72,7 @@ classes = (
     DUP_DuplicateToFacesOperator,
     DUP_DuplicateToVerticesOperator,
     DUP_DeleteDuplicatedChildrenOperator,
+    DuplicatorToggleDuplicatedBoundingBoxOperator,
     DuplicationPanel,
     DuplicationOptionsPanel,
     DuplicationTargetPanel

@@ -176,7 +176,8 @@ def selected_src_obj():
 
 
 def rand_elements(collection, max=sys.maxsize):
-    num_elements = min(round(len(collection) * bpy.context.scene.dup_density), max)
+    num_elements = min(
+        round(len(collection) * bpy.context.scene.dup_density), max)
     return random.choices(collection, k=num_elements)
 
 
@@ -236,3 +237,14 @@ def delete_duplicated_children(obj):
 def delete_duplicated_children_for_selected():
     for obj in bpy.context.selected_objects:
         delete_duplicated_children(obj)
+
+
+def toggle_duplicated_children_bounding_box_view(obj):
+    for child in obj.children:
+        if 'duplicated' in child:
+            child.display_type = 'BOUNDS' if child.display_type == 'TEXTURED' else 'TEXTURED'
+
+
+def toggle_duplicated_children_bounding_box_view_for_selected():
+    for obj in bpy.context.selected_objects:
+        toggle_duplicated_children_bounding_box_view(obj)

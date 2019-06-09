@@ -68,3 +68,5 @@ class DuplicationTargetPanel(bpy.types.Panel):
         layout = self.layout
         row = layout.row()
         row.operator('object.delete_duplicated_children', text="Remove duplicated children")
+        row = layout.row()
+        row.operator('object.toggle_duplicated_children_bounding_box', text="Toggle bounding box")
