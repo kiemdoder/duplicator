@@ -45,6 +45,12 @@ def root_parent(obj):
         return obj
 
 
+def sub_tree_hide_viewport(obj, hidden):
+    for child in obj.children:
+        child.hide_viewport = hidden
+        sub_tree_hide_viewport(child, hidden)
+
+
 def copy_particle_systems(from_obj, to_obj):
     selected = deselect_all()
     active = bpy.context.object
@@ -87,7 +93,9 @@ def duplicate_obj(name, src_obj, col=None):
         col = bpy.context.collection
 
     new_obj = bpy.data.objects.new(name, src_obj.data)
-    new_obj['duplicated'] = True
+    new_obj['duplicated'] = {
+        'bounding_box': False
+    }
 
     # add to collection
     col.objects.link(new_obj)
@@ -242,7 +250,16 @@ def delete_duplicated_children_for_selected():
 def toggle_duplicated_children_bounding_box_view(obj):
     for child in obj.children:
         if 'duplicated' in child:
-            child.display_type = 'BOUNDS' if child.display_type == 'TEXTURED' else 'TEXTURED'
+            duplicated = child['duplicated']
+            show_bounding_box = not duplicated['bounding_box']
+
+            sub_tree_hide_viewport(child, show_bounding_box)
+
+            duplicated['bounding_box'] = show_bounding_box
+            if child.display_type == 'BOUNDS' and not show_bounding_box:
+                child.display_type = 'TEXTURED'
+            elif child.display_type == 'TEXTURED' and show_bounding_box:
+                child.display_type = 'BOUNDS'
 
 
 def toggle_duplicated_children_bounding_box_view_for_selected():
