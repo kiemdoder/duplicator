@@ -1,3 +1,5 @@
+from typing import List, Any
+
 import bpy
 import mathutils
 import math
@@ -183,21 +185,28 @@ def selected_src_obj():
     return None
 
 
+def selected_src_objects():
+    return list(filter(lambda obj: obj.name != bpy.context.object.name, bpy.context.selected_objects))
+
+
 def rand_elements(collection, max=sys.maxsize):
+    l: List[Any] = list(collection)
     num_elements = min(
-        round(len(collection) * bpy.context.scene.dup_density), max)
-    return random.choices(collection, k=num_elements)
+        round(len(l) * bpy.context.scene.dup_density), max)
+    random.shuffle(l)
+    return l[: num_elements]
 
 
-def duplicate_to_faces(src_obj, target, col=None):
+def duplicate_to_faces(src_objects, target, col=None):
     """Duplicate the selected object to the faces of the active object"""
-    if bpy.context.scene.dup_duplicate_tree:
-        src_obj = root_parent(src_obj)
-
     target.instance_type = 'NONE'
 
     max_duplications = bpy.context.scene.dup_max_duplications if bpy.context.scene.dup_limit_num_duplications else sys.maxsize
     for face in rand_elements(target.data.polygons, max_duplications):
+        src_obj = random.choice(src_objects)
+        if bpy.context.scene.dup_duplicate_tree:
+            src_obj = root_parent(src_obj)
+
         new_obj = duplicate_tree(target.name, src_obj, col)
         new_obj.parent = target
         move_to_face(new_obj, face)
@@ -207,10 +216,10 @@ def duplicate_to_faces(src_obj, target, col=None):
 
 def duplicate_selected_to_faces(col=None):
     if len(bpy.context.selected_objects) > 1:
-        source = selected_src_obj()
+        source_objects = selected_src_objects()
         target = bpy.context.object
-        if source:
-            duplicate_to_faces(source, target, col)
+        if source_objects:
+            duplicate_to_faces(source_objects, target, col)
 
 
 def duplicate_to_vertices(src_obj, target, col=None):
