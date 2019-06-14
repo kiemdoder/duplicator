@@ -138,6 +138,8 @@ def duplicate_selected(col=None):
     if src_obj:
         new_obj = duplicate_tree(src_obj.name, src_obj, col)
         new_obj.location = bpy.context.scene.cursor.location
+        new_obj.rotation_mode = 'XYZ'
+        new_obj.rotation_euler = bpy.context.scene.cursor.rotation_euler
 
 
 def align_obj_with_normal(obj, normal):
